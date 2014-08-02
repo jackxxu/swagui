@@ -1,0 +1,10 @@
+#!/usr/bin/env ruby
+require "rack"
+require 'webrick'
+require 'swagui'
+
+base_server = lambda {|x| [200, {}, ['']]}
+
+server = WEBrick::HTTPServer.new(:Port => 9292)
+server.mount '/', Rack::Handler::WEBrick, Swagui::Middleware.new(base_server, url: '/', path: (ARGV[0] || '.'))
+server.start
