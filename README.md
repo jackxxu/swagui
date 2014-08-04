@@ -1,4 +1,4 @@
-# Swigui
+# Swagui
 
 a Rack middleware app and a command-line utility that helps you render [swagger-ui], a great api documentation tool, with ease and grace.
 
