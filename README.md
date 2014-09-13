@@ -19,7 +19,7 @@ In your `application.rb` (for Rails app) or `config.ru` (for Rack app), add Swig
 
 ```ruby
 if Rack.env == 'development'
-  use Swagui::Middleware, url: '/doc', path: 'doc'
+  use Swagui::App, url: '/doc', path: 'doc'
 end
 ```
 

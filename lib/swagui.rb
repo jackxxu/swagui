@@ -1,2 +1,4 @@
 require "swagui/version"
-require "swagui/middleware"
+require "swagui/app"
+require "swagui/asset_handler"
+require "swagui/swagger_doc_handler"
