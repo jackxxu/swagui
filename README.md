@@ -25,6 +25,13 @@ end
 
 * `url`: the url path to access the [swagger-ui].
 * `path`: the sub-directory name where the swagger files are stored. It assumes that `api-docs` is the index file in the directory.
+* basic auth block: in case the doc site need to be protected by http basic auth, you can configure it by a block, for example:
+
+```ruby
+  use Swagui::App, url: '/doc', path: 'doc' do |username, password|
+    [username, password] == ['admin', 'admin']
+  end
+```
 
 You will be able to access the [swagger-ui] loaded with your api documentation at `/doc` (your `url` setting) when the server starts.
 
