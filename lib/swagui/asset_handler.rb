@@ -12,7 +12,6 @@ module Swagui
     end
 
     def call(env)
-      puts env["PATH_INFO"]
       env["PATH_INFO"] = env["PATH_INFO"].gsub(@url_regex, '')
       env["PATH_INFO"] = 'index.html' if env["PATH_INFO"] == ''
       @asset_file_server.call(env)

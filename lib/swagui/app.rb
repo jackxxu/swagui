@@ -23,7 +23,7 @@ module Swagui
     def call(env)
       if @asset_handler.handles?(env) # for assets (css/js) files
         @asset_stack.call(env)
-      elsif @swagger_doc_handler.handles?(env) # for assets (css/js) files
+      elsif @swagger_doc_handler.handles?(env) # for swagger json files
         @swagger_doc_stack.call(env)
       else
         @app.call(env)
