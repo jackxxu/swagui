@@ -3,6 +3,9 @@ module Swagui
     def initialize(path, url)
       @url_regex = Regexp.new("^#{url}")
       app_doc_dir = File.expand_path(path || url, Dir.pwd)
+
+      raise "swagger api doc directory #{app_doc_dir} does not exist" unless File.directory?(app_doc_dir)
+
       @app_file_server = Rack::File.new(app_doc_dir)
     end
 
@@ -15,7 +18,7 @@ module Swagui
 
       response = first_valid_file_response(path) || [404, {"Content-Type"=>"application/json"}, '']
 
-      if response[2].path.end_with?('.yml') # yml response needs to be re=processed.
+      if response[2].respond_to?(:path) && response[2].path.end_with?('.yml') # yml response needs to be re=processed.
         body = ''
         response[2].each {|f| body = YAML::load(f).to_json}
         response[2] = [body]

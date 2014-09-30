@@ -4,6 +4,9 @@ module Swagui
     def initialize(path)
       @url_regex = Regexp.union(Regexp.new("^\/swagger-ui"), Regexp.new("^#{path}\/?$"))
       swagger_ui_dir = File.expand_path('../../swagger-ui', File.dirname(__FILE__))
+
+      raise "swagger ui assets directory #{swagger_ui_dir} does not exist"  unless File.directory?(swagger_ui_dir)
+
       @asset_file_server = Rack::File.new(swagger_ui_dir)
     end
 
