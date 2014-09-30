@@ -13,16 +13,9 @@ module Swagui
     def call(env)
       path = env["PATH_INFO"].gsub(@url_regex, '') # root path renders index.html
 
-      env['HTTP_IF_MODIFIED_SINCE'] = nil # not 304s
+      response = first_valid_file_response(path) || [404, {"Content-Type"=>"application/json"}, '']
 
-      response = [404, {"Content-Type"=>"application/json"}, '']
-      extension = ['', '.json', '.yml'].find do |ext|
-        response = @app_file_server.call(env.dup.merge!('PATH_INFO' => "#{path}#{ext}"))
-        response[0] == 200
-      end
-
-      # handles yaml parsing
-      if extension == '.yml'
+      if response[2].path.end_with?('.yml') # yml response needs to be re=processed.
         body = ''
         response[2].each {|f| body = YAML::load(f).to_json}
         response[2] = [body]
@@ -33,5 +26,13 @@ module Swagui
 
       response
     end
+
+    private
+
+      def first_valid_file_response(path)
+        ['', '.json', '.yml'].map do |ext|
+          @app_file_server.call('PATH_INFO' => "#{path}#{ext}", 'REQUEST_METHOD' => 'GET')
+        end.find {|res| res[0] == 200 }
+      end
   end
 end
