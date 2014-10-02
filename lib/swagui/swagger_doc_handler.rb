@@ -2,11 +2,11 @@ module Swagui
   class SwaggerDocHandler
     def initialize(path, url)
       @url_regex = Regexp.new("^#{url}")
-      app_doc_dir = File.expand_path(path || url, Dir.pwd)
+      app_doc_dir = Swagui.file_full_path(path || url)
 
       raise "swagger api doc directory #{app_doc_dir} does not exist" unless File.directory?(app_doc_dir)
 
-      @app_file_server = Rack::File.new(app_doc_dir)
+      @app_file_server = YAMLDocHandler.new(Rack::File.new(app_doc_dir))
     end
 
     def handles?(env)
@@ -16,26 +16,12 @@ module Swagui
     def call(env)
       path = env["PATH_INFO"].gsub(@url_regex, '') # root path renders index.html
 
-      response = first_valid_file_response(path) || [404, {"Content-Type"=>"application/json"}, '']
+      first_valid_file_response = ['', '.json', '.yml'].map do |ext|
+        @app_file_server.call(env.merge('PATH_INFO' => "#{path}#{ext}", 'REQUEST_METHOD' => 'GET'))
+      end.find {|res| res[0] == 200 }
 
-      if response[2].respond_to?(:path) && response[2].path.end_with?('.yml') # yml response needs to be re=processed.
-        body = ''
-        response[2].each {|f| body = YAML::load(f).to_json}
-        response[2] = [body]
-        response[1].merge!("Content-Length"=> body.size.to_s)
-      end
-
-      response[1].merge!("Content-Type"=>"application/json") # response is always json content
-
-      response
+      first_valid_file_response || [404, {"Content-Type"=>"application/json"}, '']
     end
 
-    private
-
-      def first_valid_file_response(path)
-        ['', '.json', '.yml'].map do |ext|
-          @app_file_server.call('PATH_INFO' => "#{path}#{ext}", 'REQUEST_METHOD' => 'GET')
-        end.find {|res| res[0] == 200 }
-      end
   end
 end
