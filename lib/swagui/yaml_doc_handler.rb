@@ -46,7 +46,7 @@ module Swagui
                 parameters_hash.merge!('type' => schema.name)
               end
             end
-            operations_hash['responseMessages'].each do |response_messages_hash|
+            (operations_hash['responseMessages'] || []).each do |response_messages_hash|
               if schema_file = response_messages_hash.delete('schema')
                 schema_file_path = Swagui.file_full_path(schema_file)
                 schema = JsonSchemaParser.parse(schema_file_path, "#{operations_hash['nickname']}-Response-#{response_messages_hash['message'].gsub(' ', '-')}")
