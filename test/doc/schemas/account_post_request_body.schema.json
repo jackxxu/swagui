@@ -1,0 +1,36 @@
+{
+  "type":"object",
+  "required":true,
+  "properties":{
+    "address": {
+      "type":"string",
+      "required":true
+    },
+    "age": {
+      "type":"number",
+      "required":true
+    },
+    "contact": {
+      "type":"object",
+      "required":true,
+      "properties":{
+        "email": {
+          "type":"string",
+          "required":true
+        },
+        "phones": {
+          "type":"array",
+          "required":true,
+          "items": {
+            "type":"string",
+            "required":true
+          }
+        }
+      }
+    },
+    "name": {
+      "type":"string",
+      "required":true
+    }
+  }
+}

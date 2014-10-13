@@ -1,0 +1,16 @@
+{
+  "type":"object",
+  "required":true,
+  "properties":{
+    "token": {
+      "type":"object",
+      "required":true,
+      "properties":{
+        "uuid": {
+          "type":"string",
+          "required":true
+        }
+      }
+    }
+  }
+}

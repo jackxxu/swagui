@@ -1,0 +1,27 @@
+---
+  produces:
+    - application/json
+  apis:
+    -
+      path: /account
+      description: create or update a account
+      operations:
+        -
+          method: POST
+          summary: create or update an account
+          nickname: PostAccount
+          parameters:
+            -
+              name: body
+              required: true
+              schema: test/doc/schemas/account_post_request_body.schema.json
+              paramType: body
+          responseMessages:
+            -
+              code: 200
+              message: account creation success
+              schema: test/doc/schemas/account_post_creation_success.schema.json
+            -
+              code: 400
+              message: account creation failure
+              schema: test/doc/schemas/account_post_creation_failure.schema.json

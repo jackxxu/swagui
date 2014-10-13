@@ -1,0 +1,8 @@
+---
+  info:
+    title: "a sojourner's api"
+    description: "Ut? Amet, et eros nascetur parturient diam scelerisque, egestas, pulvinar sit cum, rhoncus eros vel urna aliquam massa! Turpis purus auctor proin aliquam nunc, nec proin vel enim est, scelerisque! Ac vel integer proin sed in."
+    contact: "sojourner@world.net"
+  apiVersion: "1.0.0"
+  swaggerVersion: "1.2"
+  authorizations: {}
