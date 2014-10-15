@@ -38,23 +38,37 @@ module Swagui
       def process_schemas(response_hash)
         (response_hash['apis'] || []).each do |api_hash|
           (api_hash['operations'] || []).each do |operations_hash|
+            operation_name = operations_hash['nickname']
+
+            merge_schema!(operations_hash, response_hash, operation_name)
+
             (operations_hash['parameters'] || []).each do |parameters_hash|
-              if schema_file = parameters_hash.delete('schema')
-                schema_file_path = Swagui.file_full_path(schema_file)
-                schema = JsonSchemaParser.parse(schema_file_path, "#{operations_hash['nickname']}-Request")
-                schema.models.each {|m| (response_hash['models'] ||= {})[m['id']] = m }
-                parameters_hash.merge!('type' => schema.name)
-              end
+              merge_schema!(parameters_hash, response_hash, "#{operation_name}-#{parameters_hash['name']}")
             end
+
             (operations_hash['responseMessages'] || []).each do |response_messages_hash|
-              if schema_file = response_messages_hash.delete('schema')
-                schema_file_path = Swagui.file_full_path(schema_file)
-                schema = JsonSchemaParser.parse(schema_file_path, "#{operations_hash['nickname']}-Response-#{response_messages_hash['message'].gsub(' ', '-')}")
-                schema.models.each {|m| (response_hash['models'] ||= {})[m['id']] = m }
-                response_messages_hash.merge!('responseModel' => schema.name)
-              end
+              merge_schema!(response_messages_hash, response_hash, "#{operation_name}-Response-#{response_messages_hash['code']}", true)
             end
           end
+        end
+      end
+
+      def merge_schema!(parent_hash, response_hash, name, response_model = false)
+        if schema_file = parent_hash.delete('schema')
+          schema_file_path = Swagui.file_full_path(schema_file)
+          schema = JsonSchemaParser.parse(schema_file_path, name)
+          schema.models.each {|m| (response_hash['models'] ||= {})[m['id']] = m }
+          parent_hash.merge!(schema_hash(schema, response_model))
+        end
+      end
+
+      def schema_hash(schema, response_model = false)
+        if response_model
+          {'responseModel' => schema.name}
+        elsif schema.array?
+          {'type' => 'array', 'items' => { '$ref' => schema.name} }
+        else
+          {'type' => schema.name}
         end
       end
 

@@ -25,3 +25,8 @@
               code: 400
               message: account creation failure
               schema: test/doc/schemas/account_post_creation_failure.schema.json
+        -
+          method: GET
+          summary: Get all the accounts
+          nickname: GETAccounts
+          schema: test/doc/schemas/account_get_request_body.schema.json

@@ -7,7 +7,7 @@ class TestJsonSchemaParser < Minitest::Test
     result = Swagui::JsonSchemaParser.parse(file_path, 'PostAccount')
     assert_equal result.class, Swagui::JsonSchema
     assert_equal result.name, 'PostAccount'
-    assert_equal result.models.size, 2
+    assert_equal result.models.size, 4
     assert_equal result.models.first.class, Hash
   end
 
