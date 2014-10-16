@@ -5,6 +5,7 @@ module Swagui
 
     def initialize(app)
       @app = app
+      @api_json_template = nil # used to store the template settings that applies to all apis
     end
 
     def call(env)
@@ -16,8 +17,8 @@ module Swagui
           body = []
           response[2].each do |f|
             body << YAML::load(f).tap do |response_hash|
-              process_schemas(response_hash)
               process_api_docs_api_listing(response_hash, response[2].path )
+              process_schemas(response_hash)
               process_base_path(response_hash, response[2].path, env)
             end.to_json
           end
@@ -51,6 +52,7 @@ module Swagui
             end
           end
         end
+        deep_merge!(response_hash, @api_json_template) if @api_json_template
       end
 
       def merge_schema!(parent_hash, response_hash, name, response_model = false)
@@ -74,6 +76,9 @@ module Swagui
 
       def process_api_docs_api_listing(response_hash, doc_path)
         if doc_path.end_with?('api-docs.yml') && response_hash['models'].nil? # requesting the root
+
+          @api_json_template = response_hash.delete('template')
+
           dir_path = File.dirname(doc_path)
           files = Dir["#{File.dirname(doc_path)}/*.yml"].map {|x| x.gsub(dir_path, '').gsub('.yml', '')}
           files.each do |file|
@@ -91,5 +96,19 @@ module Swagui
         end
       end
 
+      def deep_merge!(actual, template)
+        merger = proc { |key, v1, v2|
+          if (Hash === v1 && Hash === v2)
+            v1.merge!(v2, &merger)
+          elsif (Array === v2 && Array === v1)
+            v1 = v1 + v2
+          elsif (Hash === v2 && Array === v1)
+            v1.map {|x| x.merge!(v2, &merger)}
+          else
+            v1
+          end
+        }
+        actual.merge!(template, &merger)
+      end
   end
 end

@@ -1,6 +1,4 @@
 ---
-  produces:
-    - application/json
   apis:
     -
       path: /account
@@ -21,10 +19,6 @@
               code: 200
               message: account creation success
               schema: test/doc/schemas/account_post_creation_success.schema.json
-            -
-              code: 400
-              message: account creation failure
-              schema: test/doc/schemas/account_post_creation_failure.schema.json
         -
           method: GET
           summary: Get all the accounts

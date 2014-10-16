@@ -6,3 +6,15 @@
   apiVersion: "1.0.0"
   swaggerVersion: "1.2"
   authorizations: {}
+  template:
+    produces:
+      - application/json
+    consumes:
+      - application/json
+    apis:
+      operations:
+        responseMessages:
+          -
+            code: 400
+            message: account creation failure
+            schema: test/doc/schemas/account_post_creation_failure.schema.json

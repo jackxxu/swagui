@@ -5,7 +5,7 @@ class TestSwaggerDocHandler < Minitest::Test
   include Rack::Test::Methods
 
   def app
-    Rack::Lint.new(mounted_app)
+    @app ||= Swagui::App.new(Rack::Lobster.new, url: '/doc', path: 'test/doc')
   end
 
   def test_loading_api_docs_root
@@ -31,5 +31,23 @@ class TestSwaggerDocHandler < Minitest::Test
     assert_equal response_json['apis'].first['operations'].last['type'], 'array'
     assert_equal response_json['apis'].first['operations'].last['items'], {'$ref' => 'GETAccounts'}
   end
+
+  def test_template_attributes_removed_from_api_docs
+    get '/doc/api-docs'
+    assert last_response.ok?
+    response_json = JSON.parse(last_response.body)
+    assert_nil response_json['template']
+  end
+
+  def test_template_attributes
+    get '/doc/api-docs'
+    get '/doc/account'
+    assert last_response.ok?
+    response_json = JSON.parse(last_response.body)
+    assert_equal response_json['produces'], ['application/json']
+    assert_equal response_json['consumes'], ['application/json']
+    assert_equal response_json['apis'].first['operations'].first['responseMessages'].map {|x| x['code']}, [200, 400]
+  end
+
 
 end

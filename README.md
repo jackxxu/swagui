@@ -42,9 +42,18 @@ You will be able to access the [swagger-ui] loaded with your api documentation a
 1. JSON documents with no extension ([original swagger doc format]), such as `api-docs` and `account`.
 2. JSON documents with `.json` extension, such as `api-docs.json` and `account.json`.
 3. YAML documents. This the recommended approach as it is naturally more concise than json and also tries to be more opinionated in the following ways:
-   1. if not provided in `api-docs.yml`, the list of apis under `apis` is automatically populated by the names of all the .yml files in the same directory.
-   2. the `basePath` attribute of each doc, used for `try it out` feature, if unprovided, is automatically provided based on the host application. this assumes the doc is hosted as part of the application.
-   3. to circumvent all the rather complex and tedious syntax for `models`, schema attributes under `apis/operations/parameters` (for request body json schema) and `apis/operations/responseMessages` (for response body json schema), and it will be used to automatically populate the `models` under root.
+   1. __auto listing__: if not provided in `api-docs.yml`, the list of apis under `apis` is automatically populated by the names of all the .yml files in the same directory.
+   2. __auto "Try it out"__: the `basePath` attribute of each doc, used for `try it out` feature, if unprovided, is automatically provided based on the host application. this assumes the doc is hosted as part of the application.
+   3. __schema-based models__: to circumvent all the rather complex and tedious syntax for `models`, schema attributes under `apis/operations/parameters` (for request body json schema) and `apis/operations/responseMessages` (for response body json schema), and it will be used to automatically populate the `models` under root.
+   4. __template__: in `api-docs.yml`, a `template` section can be added that lists all the general attributes for all the apis, for example if you apis is a JSON api, chances are that they all consumes JSON requests and produces JSON responses. IN this case, instead of adding the following line in each service yml file, you can simply add this section to `api-docs.yml`.
+
+```javascript
+  template:
+    produces:
+      - application/json
+    consumes:
+      - application/json
+```
 
 With this approach, swagger api docs are now a lot more concise and readible, let alone having dynamic `basePath`.
 
