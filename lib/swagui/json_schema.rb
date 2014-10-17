@@ -18,7 +18,7 @@ module Swagui
       else
         @type = 'class'
         (@schema_hash['properties'] ||= []).each do |pname, pattributes|
-          if pattributes['type'] == 'object' || (pattributes['type'] == 'array' && !pattributes['items'].nil?)
+          if pattributes['type'] == 'object' || (pattributes['type'] == 'array' && !pattributes['items'].nil? && (pattributes['items']['type'] == 'object'))
             nested_object_name = "#{@name}-#{pname}"
             if pattributes['type'] == 'object'
               @schema_hash['properties'][pname] = {'$ref' => nested_object_name }
