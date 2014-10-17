@@ -17,9 +17,12 @@ module Swagui
           body = []
           response[2].each do |f|
             body << YAML::load(f).tap do |response_hash|
-              process_api_docs_api_listing(response_hash, response[2].path )
-              process_schemas(response_hash)
-              process_base_path(response_hash, response[2].path, env)
+              if response[2].path.end_with?('api-docs.yml')
+                process_api_docs_api_listing(response_hash, response[2].path )
+              else
+                process_schemas(response_hash)
+                process_base_path(response_hash, response[2].path, env)
+              end
             end.to_json
           end
 
@@ -37,6 +40,9 @@ module Swagui
       end
 
       def process_schemas(response_hash)
+
+        deep_merge!(response_hash, @api_json_template) if @api_json_template
+
         (response_hash['apis'] || []).each do |api_hash|
           (api_hash['operations'] || []).each do |operations_hash|
             operation_name = operations_hash['nickname']
@@ -52,7 +58,6 @@ module Swagui
             end
           end
         end
-        deep_merge!(response_hash, @api_json_template) if @api_json_template
       end
 
       def merge_schema!(parent_hash, response_hash, name, response_model = false)
@@ -75,7 +80,7 @@ module Swagui
       end
 
       def process_api_docs_api_listing(response_hash, doc_path)
-        if doc_path.end_with?('api-docs.yml') && response_hash['models'].nil? # requesting the root
+        if response_hash['models'].nil? # requesting the root
 
           @api_json_template = response_hash.delete('template')
 
@@ -90,7 +95,7 @@ module Swagui
       end
 
       def process_base_path(response_hash, doc_path, env)
-        if !doc_path.end_with?('api-docs.yml') && response_hash['basePath'].nil?
+        if response_hash['basePath'].nil?
           request = Rack::Request.new(env)
           response_hash['basePath'] = (request.base_url + request.script_name)
         end
