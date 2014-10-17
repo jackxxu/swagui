@@ -591,6 +591,7 @@ var SwaggerModelProperty = function(name, obj) {
   this.isCollection = this.dataType && (this.dataType.toLowerCase() === 'array' || this.dataType.toLowerCase() === 'list' || this.dataType.toLowerCase() === 'set');
   this.descr = obj.description;
   this.required = obj.required;
+  this.sampleValue = obj.example; // sets the sample value
   if (obj.items != null) {
     if (obj.items.type != null) {
       this.refDataType = obj.items.type;
@@ -620,6 +621,9 @@ SwaggerModelProperty.prototype.getSampleValue = function(modelsToIgnore) {
   var result;
   if ((this.refModel != null) && (modelsToIgnore.indexOf(prop.refModel.name) === -1)) {
     result = this.refModel.createJSONSample(modelsToIgnore);
+  } else if (this.sampleValue) {
+    // displays sample value, if any
+    result = this.sampleValue
   } else {
     if (this.isCollection) {
       result = this.toSampleValue(this.refDataType);
@@ -1489,7 +1493,7 @@ SwaggerAuthorizations.prototype.apply = function(obj, authorizations) {
           if (result === true)
             status = true;
         }
-      }      
+      }
     }
   }
 

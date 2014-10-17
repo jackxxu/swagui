@@ -54,6 +54,7 @@ You will be able to access the [swagger-ui] loaded with your api documentation a
     consumes:
       - application/json
 ```
+   5. __example value__: in current swagger ui, according to [swagui ui default value code], the render json structure is displayed with some empty values, such as `0`, `0.0`, `""`, etc, depends on the data type. This could make it hard to visualize how the json structure really looks like. Swagui provides an optional `example` attribute for each property, for the sample value that populates the json display.
 
 With this approach, swagger api docs are now a lot more concise and readible, let alone having dynamic `basePath`.
 
@@ -117,6 +118,7 @@ You will then able to view the [swagger-ui] loaded with your api documentation a
 
 [swagger-ui]: https://github.com/wordnik/swagger-ui
 [original swagger doc format]: https://github.com/wordnik/swagger-spec/blob/master/fixtures/v1.2/helloworld/static/api-docs
+[swagui ui default value code]: https://github.com/wordnik/swagger-ui/blob/6b448c1faecc5816d90de41ee6e90bb6322816c1/dist/lib/swagger.js#L660-L676
 ## Contributing
 
 1. Fork it ( https://github.com/jackxxu/swagui/fork )
