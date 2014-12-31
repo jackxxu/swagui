@@ -1,10 +1,20 @@
 require 'rack'
 require 'json'
 require 'yaml'
+require 'rack/cors'
 
 module Swagui
 
   class App
+
+    CORS_SETTING_PROC = Proc.new {
+      allow do
+        origins '*'
+        resource '*',
+          :headers => :any,
+          :methods => [:get, :post, :put, :delete, :options]
+      end
+    }.freeze
 
     def initialize(app, options={}, &blk)
       @app = app
@@ -13,10 +23,10 @@ module Swagui
 
       if block_given?
         @asset_stack = Rack::Auth::Basic.new(@asset_handler, "Restricted Documentation", &blk)
-        @swagger_doc_stack = Rack::Auth::Basic.new(@swagger_doc_handler, "Restricted Documentation", &blk)
+        @swagger_doc_stack = Rack::Cors.new(Rack::Auth::Basic.new(@swagger_doc_handler, "Restricted Documentation", &blk), &CORS_SETTING_PROC)
       else
         @asset_stack = @asset_handler
-        @swagger_doc_stack = @swagger_doc_handler
+        @swagger_doc_stack = Rack::Cors.new(@swagger_doc_handler, &CORS_SETTING_PROC)
       end
     end
 
