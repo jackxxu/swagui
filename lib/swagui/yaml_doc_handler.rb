@@ -5,30 +5,35 @@ module Swagui
 
     def initialize(app)
       @app = app
-      @api_json_template = nil # used to store the template settings that applies to all apis
+      api_docs_content = @app.call("REQUEST_METHOD"=>"GET", "PATH_INFO"=>"/api-docs.yml")
+      v = ''; api_docs_content[2].each {|x| v = v +  x}
+      @api_json_template = YAML.load(v)['template'] # used to store the template settings that applies to all apis
     end
 
     def call(env)
       @app.call(env).tap do |response|
+        if response[0] == 200
+          response[1].merge!("Content-Type"=>"application/json")  # response is always json content
 
-        response[1].merge!("Content-Type"=>"application/json") # response is always json content
+          if yaml_response?(response) # yml response needs to be re=processed.
+            body = []
+            response[2].each do |f|
+              body << f
+            end
 
-        if yaml_response?(response) # yml response needs to be re=processed.
-          body = []
-          response[2].each do |f|
-            body << YAML::load(f).tap do |response_hash|
-              if response[2].path.end_with?('api-docs.yml')
-                process_api_docs_api_listing(response_hash, response[2].path )
-              else
-                process_schemas(response_hash)
-                process_base_path(response_hash, response[2].path, env)
-              end
-            end.to_json
+            json_string = YAML::load(body.join('')).tap do |response_hash|
+                            if response[2].path.end_with?('api-docs.yml')
+                              process_api_docs_api_listing(response_hash, response[2].path )
+                            else
+                              process_schemas(response_hash)
+                              process_base_path(response_hash, response[2].path, env)
+                            end
+                          end.to_json
+
+            response[2] = [json_string]
+
+            response[1].merge!("Content-Length"=> json_string.size.to_s)
           end
-
-          response[2] = body
-
-          response[1].merge!("Content-Length"=> body.first.size.to_s)
         end
       end
     end
@@ -81,8 +86,6 @@ module Swagui
 
       def process_api_docs_api_listing(response_hash, doc_path)
         if response_hash['models'].nil? # requesting the root
-
-          @api_json_template = response_hash.delete('template')
 
           dir_path = File.dirname(doc_path)
           files = Dir["#{File.dirname(doc_path)}/*.yml"].map {|x| x.gsub(dir_path, '').gsub('.yml', '')}

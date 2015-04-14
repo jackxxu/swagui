@@ -18,7 +18,7 @@ module Swagui
 
       first_valid_file_response = ['', '.json', '.yml'].map do |ext|
         @app_file_server.call(env.merge('PATH_INFO' => "#{path}#{ext}", 'REQUEST_METHOD' => 'GET'))
-      end.find {|res| res[0] == 200 }
+      end.find {|res| (res[0] == 200 || res[0] == 304) }
 
       first_valid_file_response || [404, {"Content-Type"=>"application/json"}, '']
     end
