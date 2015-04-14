@@ -11,6 +11,8 @@ module Swagui
     end
 
     def call(env)
+      env['HTTP_IF_MODIFIED_SINCE'] = nil # disable Last-Modified caching
+
       @app.call(env).tap do |response|
         if response[0] == 200
           response[1].merge!("Content-Type"=>"application/json")  # response is always json content
