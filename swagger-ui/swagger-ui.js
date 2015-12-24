@@ -30860,7 +30860,7 @@ Emitter.prototype.hasListeners = function(event){
  * TODO: combatible error handling?
  */
 
-module.exports = function(arr, fn, initial){  
+module.exports = function(arr, fn, initial){
   var idx = 0;
   var len = arr.length;
   var curr = arguments.length == 3
@@ -30870,7 +30870,7 @@ module.exports = function(arr, fn, initial){
   while (idx < len) {
     curr = fn.call(null, curr, arr[idx], ++idx, arr);
   }
-  
+
   return curr;
 };
 },{}]},{},[1])(1)
@@ -32185,3 +32185,82 @@ SwaggerUi.Views.StatusCodeView = Backbone.View.extend({
     return this;
   }
 });}).call(this);
+
+
+$(function () {
+  var url = window.location.search.match(/url=([^&]+)/);
+  var base = window.location.search.match(/base=([^&]+)/);
+  var referrer = document.referrer;
+
+  if (window.location.host === "") {
+    return
+  } else if (url && url.length > 1) { // query param full url
+    url = decodeURIComponent(url[1]);
+  } else if (base && base.length > 1 && referrer) { // github in-branch link
+    url = (referrer + base[1]).replace(/\/tree\//, '/raw/');
+  } else {
+    url = window.location.href + "/api-docs"
+  }
+
+  // Pre load translate...
+  if(window.SwaggerTranslator) {
+    window.SwaggerTranslator.translate();
+  }
+  window.swaggerUi = new SwaggerUi({
+    url: url,
+    dom_id: "swagger-ui-container",
+    supportedSubmitMethods: ['get', 'post', 'put', 'delete', 'patch'],
+    onComplete: function(swaggerApi, swaggerUi){
+      if(typeof initOAuth == "function") {
+        initOAuth({
+          clientId: "your-client-id",
+          clientSecret: "your-client-secret",
+          realm: "your-realms",
+          appName: "your-app-name",
+          scopeSeparator: ","
+        });
+      }
+
+      if(window.SwaggerTranslator) {
+        window.SwaggerTranslator.translate();
+      }
+
+      $('pre code').each(function(i, e) {
+        hljs.highlightBlock(e)
+      });
+
+      // addApiKeyAuthorization();
+    },
+    onFailure: function(data) {
+      log("Unable to Load SwaggerUI");
+    },
+    docExpansion: "none",
+    apisSorter: "alpha",
+    showRequestHeaders: false
+  });
+
+  function addApiKeyAuthorization(){
+    var key = encodeURIComponent($('#input_apiKey')[0].value);
+    if(key && key.trim() != "") {
+        var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("api_key", key, "query");
+        window.swaggerUi.api.clientAuthorizations.add("api_key", apiKeyAuth);
+        log("added key " + key);
+    }
+  }
+
+  $('#input_apiKey').change(addApiKeyAuthorization);
+
+  // if you have an apiKey you would like to pre-populate on the page for demonstration purposes...
+  /*
+    var apiKey = "myApiKeyXXXX123456789";
+    $('#input_apiKey').val(apiKey);
+  */
+
+  window.swaggerUi.load();
+
+  function log() {
+    if ('console' in window) {
+      console.log.apply(console, arguments);
+    }
+  }
+});
