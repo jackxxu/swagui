@@ -32187,14 +32187,12 @@ SwaggerUi.Views.StatusCodeView = Backbone.View.extend({
 });}).call(this);
 
 
-$(function () {
+function draw_screen() {
   var url = window.location.search.match(/url=([^&]+)/);
   var base = window.location.search.match(/base=([^&]+)/);
   var referrer = document.referrer;
 
-  if (window.location.host === "") {
-    return
-  } else if (url && url.length > 1) { // query param full url
+  if (url && url.length > 1) { // query param full url
     url = decodeURIComponent(url[1]);
   } else if (base && base.length > 1 && referrer) { // github in-branch link
     url = (referrer + base[1]).replace(/\/tree\//, '/raw/');
@@ -32262,5 +32260,5 @@ $(function () {
     if ('console' in window) {
       console.log.apply(console, arguments);
     }
-  }
-});
+  };
+};

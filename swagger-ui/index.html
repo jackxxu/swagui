@@ -22,6 +22,15 @@
   <script src='https://cdn.rawgit.com/jackxxu/swagui/swagger-ui2/swagger-ui/lib/marked.js' type='text/javascript'></script>
   <script src='https://cdn.rawgit.com/jackxxu/swagui/swagger-ui2/swagger-ui/lib/swagger-oauth.js' type='text/javascript'></script>
 
+  <script type="text/javascript">
+    $(function () {
+      if (window.location.host === "") {
+        return;
+      } else {
+        draw_screen();
+      }
+    });
+  </script>
 </head>
 
 <body class="swagger-section">
