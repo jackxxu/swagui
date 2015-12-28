@@ -39,6 +39,15 @@
           data_id = this.getAttribute('data-id');
           Docs["expandOperationsForResource"](data_id);
         });
+
+        $('.toggleOperation').click(function() {
+          elem = $(this).parents("li.operation").find('div.content');
+          if (elem.is(':visible')) {
+            elem.slideUp();
+          } else {
+            elem.slideDown();
+          }
+        });
       } else {
         draw_screen();
       }
