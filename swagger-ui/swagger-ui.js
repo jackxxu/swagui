@@ -32200,10 +32200,6 @@ function draw_screen() {
     url = window.location.href + "/api-docs"
   }
 
-  // Pre load translate...
-  if(window.SwaggerTranslator) {
-    window.SwaggerTranslator.translate();
-  }
   window.swaggerUi = new SwaggerUi({
     url: url,
     dom_id: "swagger-ui-container",
@@ -32236,23 +32232,6 @@ function draw_screen() {
     apisSorter: "alpha",
     showRequestHeaders: false
   });
-
-  function addApiKeyAuthorization(){
-    var key = encodeURIComponent($('#input_apiKey')[0].value);
-    if(key && key.trim() != "") {
-        var apiKeyAuth = new SwaggerClient.ApiKeyAuthorization("api_key", key, "query");
-        window.swaggerUi.api.clientAuthorizations.add("api_key", apiKeyAuth);
-        log("added key " + key);
-    }
-  }
-
-  $('#input_apiKey').change(addApiKeyAuthorization);
-
-  // if you have an apiKey you would like to pre-populate on the page for demonstration purposes...
-  /*
-    var apiKey = "myApiKeyXXXX123456789";
-    $('#input_apiKey').val(apiKey);
-  */
 
   window.swaggerUi.load();
 

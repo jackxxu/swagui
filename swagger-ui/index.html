@@ -17,7 +17,7 @@
   <script src='https://cdn.rawgit.com/jackxxu/swagui/swagger-ui2/swagger-ui/lib/handlebars-2.0.0.js' type='text/javascript'></script>
   <script src='https://cdn.rawgit.com/jackxxu/swagui/swagger-ui2/swagger-ui/lib/underscore-min.js' type='text/javascript'></script>
   <script src='https://cdn.rawgit.com/jackxxu/swagui/swagger-ui2/swagger-ui/lib/backbone-min.js' type='text/javascript'></script>
-  <script src='https://cdn.rawgit.com/jackxxu/swagui/swagger-ui2/swagger-ui/swagger-ui.min.js' type='text/javascript'></script>
+  <script src='https://rawgit.com/jackxxu/swagui/swagger-ui2/swagger-ui/swagger-ui.min.js' type='text/javascript'></script>
   <script src='https://cdn.rawgit.com/jackxxu/swagui/swagger-ui2/swagger-ui/lib/highlight.7.3.pack.js' type='text/javascript'></script>
   <script src='https://cdn.rawgit.com/jackxxu/swagui/swagger-ui2/swagger-ui/lib/marked.js' type='text/javascript'></script>
   <script src='https://cdn.rawgit.com/jackxxu/swagui/swagger-ui2/swagger-ui/lib/swagger-oauth.js' type='text/javascript'></script>
@@ -25,7 +25,20 @@
   <script type="text/javascript">
     $(function () {
       if (window.location.host === "") {
-        return;
+        $('.toggleEndpointList').click(function() {
+          data_id = this.getAttribute('data-id');
+          Docs["toggleEndpointListForResource"](data_id);
+        });
+
+        $('.collapseResource').click(function() {
+          data_id = this.getAttribute('data-id');
+          Docs["collapseOperationsForResource"](data_id);
+        });
+
+        $('.expandResource').click(function() {
+          data_id = this.getAttribute('data-id');
+          Docs["expandOperationsForResource"](data_id);
+        });
       } else {
         draw_screen();
       }
