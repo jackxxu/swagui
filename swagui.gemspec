@@ -19,6 +19,9 @@ Gem::Specification.new do |spec|
 
   spec.add_dependency "rack"
   spec.add_dependency 'rack-cors'
+  spec.add_dependency 'watir'
+  spec.add_dependency 'watir-webdriver'
+  spec.add_dependency 'webrick'
 
   spec.add_development_dependency "bundler", "~> 1.6"
   spec.add_development_dependency "rake"
