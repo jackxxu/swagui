@@ -1,3 +1,4 @@
+require 'json'
 require 'watir'
 require 'watir-webdriver'
 require 'rack'
@@ -22,6 +23,12 @@ namespace :swagui do
     swagger_doc_loc  = ARGV[1]
     swagger_doc_path = "#{Rake.application.original_dir}/#{swagger_doc_loc}/.."
     swagui_path      = File.expand_path('../../../swagger-ui', __FILE__)
+
+    begin
+      JSON.parse(File.read(swagger_doc_loc))
+    rescue JSON::ParserError
+      fail "Error: unable to parse JSON from #{swagger_doc_loc}"
+    end
 
     doc_server = WEBrick::HTTPServer.new(:Port => 9300, AccessLog: []).tap do |server|
       server.mount '/',
